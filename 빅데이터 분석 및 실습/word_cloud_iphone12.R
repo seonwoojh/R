@@ -13,7 +13,8 @@ library(tm)
 source("./my_twitter_oauth.R")
 
 # iphone12관련 트윗 1000개를 정식출시일인 10월 23일부터 11월 05일까지 추출
-iPhone12 = searchTwitter("#iPhone12", n=1000, lang = "en",since='2020-10-23', until='2020-11-05')
+keyword_en <- enc2utf8("iPhone12")
+iPhone12 = searchTwitter(keyword_en, n=1000, lang = "en",since='2020-10-23', until='2020-11-05')
 
 # 데이터 미리보기
 head(iPhone12)
@@ -109,7 +110,7 @@ inspect(myCorpus[1:6])
 myStopwords <- c(stopwords('english'),"today","new", "link","apple","buy","amp","want",
                  "say", "live", "make", "now", "get", "take", "keep",
                  "add", "will", "name", "just", "can", "one", "us", "time", "the",
-                 "let","give","the","enter","mobile","apple","win","which")
+                 "let","give","enter","mobile","win","which")
 myCorpus <- tm_map(myCorpus, removeWords, myStopwords)
 inspect(myCorpus[1:6])
 
@@ -137,14 +138,11 @@ set.seed(375) # to make it reproducible
 
 # 폰트 색상 지정
 display.brewer.all()
-color <- brewer.pal(12, "Set3")
+blue <- brewer.pal(6,"Blues")
 wordcloud(words=names(wordFreq), freq=wordFreq,
-          scale=c(4,.6), min.freq=40, random.order=F, colors = color)
+          scale=c(4,.6), min.freq=40, random.order=F, colors = blue)
 
 wordFreq[1:60]
 
-termFrequency <- rowSums(m)
-# 단어 빈도수가 40 이상인 단어만 선택  조건문 만들기
-(termFrequency <- termFrequency[termFrequency >= 40])
-barplot(termFrequency, las=2)
-
+iphone12_ko_count30df <- iphone12_ko_count30 %>% as.data.frame()             ## data frame변환하고 그래프 작성 
+ggplot(iphone12_ko_count30df, aes(x=iphone12_ko, y=Freq)) + geom_bar(stat="identity"
