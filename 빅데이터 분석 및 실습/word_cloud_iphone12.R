@@ -3,7 +3,7 @@
 rm(list = ls())
 
 # 라이브러리 임포트
-
+library(RColorBrewer)
 library(multilinguer)
 library(KoNLP)
 library(twitteR)
@@ -57,7 +57,7 @@ myCorpus <- tm_map(myCorpus, removeURL )
 inspect(myCorpus)
 
 # 숫자 제거
-myCorpus <- tm_map(myCorpus, removeNumbers)
+#myCorpus <- tm_map(myCorpus, removeNumbers)
 
 # ...등 깨진글자 제거
 ell_def <- rawToChar(as.raw(c('0xE2','0x80','0xA6')))
@@ -67,34 +67,49 @@ myCorpus <- tm_map(myCorpus, removeChar)
 inspect(myCorpus)
 
 
-# pro 날리기
-removeComment_pro <-function(x) gsub("pro[[:alnum:]]*", "", x) 
-myCorpus <- tm_map(myCorpus, removeComment_pro)
+# iphone 제거
+removeComment_iphone <-function(x) gsub("iPhone[[:alnum:]]*", "", x) 
+myCorpus <- tm_map(myCorpus, removeComment_iphone)
 inspect(myCorpus[1:6])
 
+# 12 제거
+removeComment_Num12 <-function(x) gsub("12[[:alnum:]]*", "", x) 
+myCorpus <- tm_map(myCorpus, removeComment_Num12)
+inspect(myCorpus[1:6])
 
-# 이모티콘 날리기
+# now 제거
+removeComment_now <-function(x) gsub("now[[:alnum:]]*", "", x) 
+myCorpus <- tm_map(myCorpus, removeComment_now)
+inspect(myCorpus[1:6])
+
+# get 제거
+removeComment_get <-function(x) gsub("get[[:alnum:]]*", "", x) 
+myCorpus <- tm_map(myCorpus, removeComment_get)
+inspect(myCorpus[1:6])
+
+# the 제거
+removeComment_the <-function(x) gsub("the[[:alnum:]]*", "", x) 
+myCorpus <- tm_map(myCorpus, removeComment_the)
+inspect(myCorpus[1:6])
+
+# 이모티콘 제거
 removeComment_emo1 <-function(x) gsub("\u2b50[[:alnum:]]*", "", x) 
 myCorpus <- tm_map(myCorpus, removeComment_emo1)
 inspect(myCorpus[1:6])
 
-
-# 이모티콘 날리기
 removeComment_emo2 <-function(x) gsub("\U0001f606[[:alnum:]]*", "", x) 
 myCorpus <- tm_map(myCorpus, removeComment_emo2)
 inspect(myCorpus[1:6])
 
-# 이모티콘 날리기
 removeComment_emo3 <-function(x) gsub("\U0001f64c[[:alnum:]]*", "", x) 
 myCorpus <- tm_map(myCorpus, removeComment_emo3)
 inspect(myCorpus[1:6])
 
 # 불용어 제거
-myStopwords <- c(stopwords('english'), "iphone",
-                 "today","new", "link","apple","buy","amp","want",
+myStopwords <- c(stopwords('english'),"today","new", "link","apple","buy","amp","want",
                  "say", "live", "make", "now", "get", "take", "keep",
                  "add", "will", "name", "just", "can", "one", "us", "time", "the",
-                 "let","give","G")
+                 "let","give","the","enter","mobile","apple","win","which")
 myCorpus <- tm_map(myCorpus, removeWords, myStopwords)
 inspect(myCorpus[1:6])
 
@@ -103,9 +118,9 @@ inspect(myCorpus[1:6])
 myCorpus <- tm_map(myCorpus, tolower)
 
 # 어간 추출
-myCorpusCopy <- myCorpus
-myCorpus <- tm_map(myCorpus, stemDocument)
-inspect(myCorpus[1:6])
+#myCorpusCopy <- myCorpus
+#myCorpus <- tm_map(myCorpus, stemDocument)
+#inspect(myCorpus[1:6])
 
 # T-D matrix 생성
 tdm <- TermDocumentMatrix(myCorpus,
@@ -119,7 +134,17 @@ wordFreq <- sort(rowSums(m), decreasing=TRUE)
 
 # 워드 클라우드 작성
 set.seed(375) # to make it reproducible
+
+# 폰트 색상 지정
+display.brewer.all()
+color <- brewer.pal(12, "Set3")
 wordcloud(words=names(wordFreq), freq=wordFreq,
-          scale=c(4,.5), min.freq=40, random.order=F)
+          scale=c(4,.6), min.freq=40, random.order=F, colors = color)
 
 wordFreq[1:60]
+
+termFrequency <- rowSums(m)
+# 단어 빈도수가 40 이상인 단어만 선택  조건문 만들기
+(termFrequency <- termFrequency[termFrequency >= 40])
+barplot(termFrequency, las=2)
+
