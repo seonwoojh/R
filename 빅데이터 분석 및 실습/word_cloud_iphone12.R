@@ -57,8 +57,6 @@ removeURL <- function(x) gsub("http[[:alnum:]]*", "", x)
 myCorpus <- tm_map(myCorpus, removeURL )
 inspect(myCorpus)
 
-# 숫자 제거
-#myCorpus <- tm_map(myCorpus, removeNumbers)
 
 # ...등 깨진글자 제거
 ell_def <- rawToChar(as.raw(c('0xE2','0x80','0xA6')))
@@ -119,9 +117,9 @@ inspect(myCorpus[1:6])
 myCorpus <- tm_map(myCorpus, tolower)
 
 # 어간 추출
-#myCorpusCopy <- myCorpus
-#myCorpus <- tm_map(myCorpus, stemDocument)
-#inspect(myCorpus[1:6])
+myCorpusCopy <- myCorpus
+myCorpus <- tm_map(myCorpus, stemDocument)
+inspect(myCorpus[1:6])
 
 # T-D matrix 생성
 tdm <- TermDocumentMatrix(myCorpus,
@@ -143,6 +141,3 @@ wordcloud(words=names(wordFreq), freq=wordFreq,
           scale=c(4,.6), min.freq=40, random.order=F, colors = blue)
 
 wordFreq[1:60]
-
-iphone12_ko_count30df <- iphone12_ko_count30 %>% as.data.frame()             ## data frame변환하고 그래프 작성 
-ggplot(iphone12_ko_count30df, aes(x=iphone12_ko, y=Freq)) + geom_bar(stat="identity"
